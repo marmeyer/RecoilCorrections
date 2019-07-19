@@ -25,6 +25,16 @@ class RecoilCorrector {
 	       float & MetCorrPx,
 	       float & MetCorrPy);
 
+  void CorrectWithHist(float MetPx,
+	       float MetPy,
+	       float genZPx, 
+	       float genZPy,
+	       float diLepPx,
+	       float diLepPy,
+	       int njets,
+	       float & MetCorrPx,
+	       float & MetCorrPy);
+
   void CorrectByMeanResolution(float MetPx,
 			       float MetPy,
 			       float genZPx, 
@@ -85,10 +95,10 @@ class RecoilCorrector {
 			    float genZPy,
 			    float diLepPx,
 			    float diLepPy,
-			    float & U1,
-			    float & U2,
-			    float & metU1,
-			    float & metU2);
+			    Double_t & U1,
+			    Double_t & U2,
+			    Double_t & metU1,
+			    Double_t & metU2);
 
   void CalculateMetFromU1U2(float U1,
 			    float U2,
@@ -99,7 +109,7 @@ class RecoilCorrector {
 			    float & metPx,
 			    float & metPy);
 
-  void  U1U2CorrectionsByWidth(float & U1, float & U2,
+  void  U1U2CorrectionsByWidth(Double_t & U1, Double_t & U2,
 			       int nZptBin,
 			       int njets);
 
@@ -128,10 +138,10 @@ class RecoilCorrector {
   TF1 * _metZParalMC[5][3];
   TF1 * _metZPerpMC[5][3];
 
-  TH1F * _metZParalDataHist[5][3];
-  TH1F * _metZPerpDataHist[5][3];
-  TH1F * _metZParalMCHist[5][3];
-  TH1F * _metZPerpMCHist[5][3];
+  TH1D * _metZParalDataHist[5][3];
+  TH1D * _metZPerpDataHist[5][3];
+  TH1D * _metZParalMCHist[5][3];
+  TH1D * _metZPerpMCHist[5][3];
 
   float _meanMetZParalData[5][3];
   float _meanMetZParalMC[5][3];

@@ -142,8 +142,6 @@ void RecoilCorrector::InitMEtWeights(TFile * _fileMet,
       _metZParalMC[ZPtBin][jetBin]   = (TF1*)_fileMet->Get(binStrParalMC);
       _metZPerpMC[ZPtBin][jetBin]    = (TF1*)_fileMet->Get(binStrPerpMC);
 
-
-
       // checking functions
       if (_metZParalData[ZPtBin][jetBin]==NULL) {
 	std::cout << "Function with name " << binStrParalData
@@ -170,6 +168,45 @@ void RecoilCorrector::InitMEtWeights(TFile * _fileMet,
 	exit(-1);
 	
       }
+
+
+      TString binStrPerpDataHist  = _perpZStr  + "_" + _nJetsStr[jetBin] + _ZPtStr[ZPtBin] + "_hist_data";
+      TString binStrParalDataHist = _paralZStr + "_" + _nJetsStr[jetBin] + _ZPtStr[ZPtBin] + "_hist_data";
+      TString binStrPerpMCHist    = _perpZStr  + "_" + _nJetsStr[jetBin] + _ZPtStr[ZPtBin] + "_hist_mc";
+      TString binStrParalMCHist   = _paralZStr + "_" + _nJetsStr[jetBin] + _ZPtStr[ZPtBin] + "_hist_mc";
+
+      _metZParalDataHist[ZPtBin][jetBin] = ((TH1D*)_fileMet->Get(binStrParalDataHist));
+      _metZPerpDataHist[ZPtBin][jetBin]  = ((TH1D*)_fileMet->Get(binStrPerpDataHist));
+      _metZParalMCHist[ZPtBin][jetBin]   = ((TH1D*)_fileMet->Get(binStrParalMCHist));
+      _metZPerpMCHist[ZPtBin][jetBin]    = ((TH1D*)_fileMet->Get(binStrPerpMCHist));
+
+      // checking histograms
+      if (_metZParalDataHist[ZPtBin][jetBin]==NULL) {
+	std::cout << "Histogram with name " << binStrParalDataHist
+		  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
+	exit(-1);
+
+      }
+      if (_metZPerpDataHist[ZPtBin][jetBin]==NULL) {
+	std::cout << "Histogram with name " << binStrPerpDataHist
+		  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
+	exit(-1);
+	
+      }
+
+      if (_metZParalMCHist[ZPtBin][jetBin]==NULL) {
+	std::cout << "Histogram with name " << binStrParalMCHist
+		  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
+	exit(-1);
+
+      }
+      if (_metZPerpMCHist[ZPtBin][jetBin]==NULL) {
+	std::cout << "Histogram with name " << binStrPerpMCHist
+		  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
+	exit(-1);
+	
+      }
+
 
       std::cout << _ZPtStr[ZPtBin] << " : " << _nJetsStr[jetBin] << std::endl;
       
@@ -213,6 +250,132 @@ void RecoilCorrector::InitMEtWeights(TFile * _fileMet,
 
 }
 
+void RecoilCorrector::CorrectWithHist(float MetPx,
+			      float MetPy,
+			      float genVPx, 
+			      float genVPy,
+			      float visVPx,
+			      float visVPy,
+			      int njets,
+			      float & MetCorrPx,
+			      float & MetCorrPy) {
+  
+  // input parameters
+  // MetPx, MetPy - missing transverse momentum 
+  // genVPx, genVPy - generated transverse momentum of Z(W)
+  // visVPx, visVPy - visible transverse momentum of Z(W)
+  // njets - number of jets 
+  // MetCorrPx, MetCorrPy - corrected missing transverse momentum
+
+  Double_t Zpt = TMath::Sqrt(genVPx*genVPx + genVPy*genVPy);
+
+  Double_t U1 = 0.0;
+  Double_t U2 = 0.0;
+  Double_t metU1 = 0.0;
+  Double_t metU2 = 0.0;
+
+  CalculateU1U2FromMet(MetPx,
+		       MetPy,
+		       genVPx,
+		       genVPy,
+		       visVPx,
+		       visVPy,
+		       U1,
+		       U2,
+		       metU1,
+		       metU2);
+  if (Zpt>1000.0)
+    Zpt = 999.0;
+
+  if (njets>=_nJetsBins)
+    njets = _nJetsBins - 1;
+
+  int ZptBin = binNumber(Zpt, _ZPtBins);
+
+  
+  TH1D * metZParalDataHist = ((TH1D*)_metZParalDataHist[ZptBin][njets]);
+  TH1D * metZPerpDataHist  = ((TH1D*)_metZPerpDataHist[ZptBin][njets]);
+  
+  TH1D * metZParalMCHist   = ((TH1D*)_metZParalMCHist[ZptBin][njets]);
+  TH1D * metZPerpMCHist    = ((TH1D*)_metZPerpMCHist[ZptBin][njets]);
+  
+  if (U1>_range*_xminMetZParal[ZptBin][njets]&&U1<_range*_xmaxMetZParal[ZptBin][njets]) {
+    
+    int nSumProb = 1;
+    double q[1];
+    double sumProb[1];
+    
+    sumProb[0] = metZParalMCHist->Integral(1,metZParalMCHist->FindBin(U1))/metZParalMCHist->Integral();
+    //std::cout << "U1 value: " << U1 << "bin in MC hist: " << metZParalMCHist->FindBin(U1) << "Integral: " << sumProb[0]  << std::endl;
+    
+    if (sumProb[0]<0) {
+      //	std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
+      sumProb[0] = 1e-5;
+    }
+    if (sumProb[0]>1) {
+      //	std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
+      sumProb[0] = 1.0 - 1e-5;
+    }
+    
+      
+    metZParalDataHist->GetQuantiles(nSumProb,q,sumProb);
+
+    //std::cout << "Parallel component. Detemined probability: " << sumProb[0] <<  " Projection value. old = " << U1;
+    float U1reco = float(q[0]);
+    U1 = U1reco;
+    //std::cout << " new = " << U1 << std::endl;
+    
+  }
+  else {
+    std::cout << "Warning: parallel MET component out of histogram range: " << U1 << ". Correction won't be applied" << std::endl;
+  //  float U1reco = rescale(U1,
+  //      		   _meanMetZParalData[ZptBin][njets],
+  //      		   _meanMetZParalMC[ZptBin][njets],
+  //      		   _rmsMetZParalData[ZptBin][njets],
+  //      		   _rmsMetZParalMC[ZptBin][njets]);
+  //  U1 = U1reco;
+  }
+
+  if (U2>_range*_xminMetZPerp[ZptBin][njets]&&U2<_range*_xmaxMetZPerp[ZptBin][njets]) {
+    
+    int nSumProb = 1;
+    double q[1];
+    double sumProb[1];
+    
+    //std::cout << "U2 value: " << U2 << "bin in MC hist: " << metZParalMCHist->FindBin(U2) << std::endl;
+    sumProb[0] = metZPerpMCHist->Integral(1,metZPerpMCHist->FindBin(U2))/metZPerpMCHist->Integral();
+    
+    if (sumProb[0]<0) {
+      //	std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
+      sumProb[0] = 1e-5;
+    }
+    if (sumProb[0]>1) {
+      //	std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
+      sumProb[0] = 1.0 - 1e-5;
+    }
+    
+    metZPerpDataHist->GetQuantiles(nSumProb,q,sumProb);
+
+    //std::cout << "Perpendicular component. Detemined probability: " << sumProb[0] <<  " Projection value. old = " << U2;
+    float U2reco = float(q[0]);
+    U2 = U2reco;
+    //std::cout << " new = " << U2 << std::endl;
+      
+  }
+  else {
+    std::cout << "Warning: perpendicular MET component out of histogram range: " << U2 << ". Correction won't be applied" << std::endl;
+  //  float U2reco = rescale(U2,
+  //      		   _meanMetZPerpData[ZptBin][njets],
+  //      		   _meanMetZPerpMC[ZptBin][njets],
+  //      		   _rmsMetZPerpData[ZptBin][njets],
+  //      		   _rmsMetZPerpMC[ZptBin][njets]);
+  //  U2 = U2reco;
+  }
+  
+  CalculateMetFromU1U2(U1,U2,genVPx,genVPy,visVPx,visVPy,MetCorrPx,MetCorrPy);
+
+}
+
 void RecoilCorrector::Correct(float MetPx,
 			      float MetPy,
 			      float genVPx, 
@@ -232,10 +395,10 @@ void RecoilCorrector::Correct(float MetPx,
 
   float Zpt = TMath::Sqrt(genVPx*genVPx + genVPy*genVPy);
 
-  float U1 = 0;
-  float U2 = 0;
-  float metU1 = 0;
-  float metU2 = 0;
+  Double_t U1 = 0;
+  Double_t U2 = 0;
+  Double_t metU1 = 0;
+  Double_t metU2 = 0;
 
   CalculateU1U2FromMet(MetPx,
 		       MetPy,
@@ -350,10 +513,10 @@ void RecoilCorrector::CorrectByMeanResolution(float MetPx,
 
   float Zpt = TMath::Sqrt(genVPx*genVPx + genVPy*genVPy);
 
-  float U1 = 0;
-  float U2 = 0;
-  float metU1 = 0;
-  float metU2 = 0;
+  Double_t U1 = 0;
+  Double_t U2 = 0;
+  Double_t metU1 = 0;
+  Double_t metU2 = 0;
 
   CalculateU1U2FromMet(MetPx,
 		       MetPy,
@@ -407,8 +570,8 @@ float RecoilCorrector::CorrectionsBySampling(float x, TF1 * funcMC, TF1 * funcDa
 
 }
 
-void RecoilCorrector::U1U2CorrectionsByWidth(float & U1, 
-					     float & U2,
+void RecoilCorrector::U1U2CorrectionsByWidth(Double_t & U1, 
+					     Double_t & U2,
 					     int ZptBin,
 					     int njets) {
 
@@ -447,10 +610,10 @@ void RecoilCorrector::CalculateU1U2FromMet(float metPx,
 					   float genZPy,
 					   float diLepPx,
 					   float diLepPy,
-					   float & U1,
-					   float & U2,
-					   float & metU1,
-					   float & metU2) {
+					   Double_t & U1,
+					   Double_t & U2,
+					   Double_t & metU1,
+					   Double_t & metU2) {
   
   float hadRecX = metPx + diLepPx - genZPx;
   float hadRecY = metPy + diLepPy - genZPy;
