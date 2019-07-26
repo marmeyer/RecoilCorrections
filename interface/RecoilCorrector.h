@@ -8,6 +8,10 @@
 #include <TRandom.h>
 #include <TMath.h>
 #include <assert.h>
+#include "TVector2.h"
+#include "TVector.h"
+#include "Math/Vector2D.h"
+#include "Math/VectorUtil.h"
 
 class RecoilCorrector {
   

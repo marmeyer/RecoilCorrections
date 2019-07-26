@@ -614,30 +614,21 @@ void RecoilCorrector::CalculateU1U2FromMet(float metPx,
 					   Double_t & U2,
 					   Double_t & metU1,
 					   Double_t & metU2) {
-  
-  float hadRecX = metPx + diLepPx - genZPx;
-  float hadRecY = metPy + diLepPy - genZPy;
-  
-  float hadRecPt = TMath::Sqrt(hadRecX*hadRecX+hadRecY*hadRecY);
-  
-  float phiHadRec = TMath::ATan2(hadRecY,hadRecX);
-  
-  float phiDiLep = TMath::ATan2(diLepPy,diLepPx);
-  
-  float phiMEt = TMath::ATan2(metPy,metPx);
-  
-  float metPt = TMath::Sqrt(metPx*metPx+metPy*metPy);
-  
-  float phiZ = TMath::ATan2(genZPy,genZPx);
-  
-  float deltaPhiZHadRec  = phiHadRec - phiZ;
-  float deltaPhiDiLepMEt = phiMEt - phiDiLep;
-  
-  U1 = hadRecPt * TMath::Cos(deltaPhiZHadRec);
-  U2 = hadRecPt * TMath::Sin(deltaPhiZHadRec);
-  
-  metU1 = metPt * TMath::Cos(deltaPhiDiLepMEt);      
-  metU2 = metPt * TMath::Sin(deltaPhiDiLepMEt);
+
+  auto diLep = ROOT::Math::XYVector(diLepPx,diLepPy);
+  auto genZ = ROOT::Math::XYVector(genZPx,genZPy);
+  auto met = ROOT::Math::XYVector(metPx,metPy);
+  auto hadRec = met + diLep - genZ; // actually, that's: - 1.0 * ( hadrons + Z) = MET - neutrinos (if involved)
+
+  auto deltaPhiZHadRec = ROOT::Math::VectorUtil::DeltaPhi(genZ,hadRec);
+  auto deltaPhiDiLepMEt = ROOT::Math::VectorUtil::DeltaPhi(diLep,met);
+
+  U1 = hadRec.R() * TMath::Cos(deltaPhiZHadRec);
+  U2 = hadRec.R() * TMath::Sin(deltaPhiZHadRec);
+
+  metU1 = met.R() * TMath::Cos(deltaPhiDiLepMEt);
+  metU2 = met.R() * TMath::Sin(deltaPhiDiLepMEt);
+
 }
 
 void RecoilCorrector::CalculateMetFromU1U2(float U1,
