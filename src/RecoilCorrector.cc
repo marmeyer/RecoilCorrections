@@ -8,14 +8,14 @@ RecoilCorrector::RecoilCorrector(TString fileName) {
   _fileName = baseDir+"/"+fileName;
   TFile * file = new TFile(_fileName);
   if (file->IsZombie()) {
-    std::cout << "file " << _fileName << " is not found...   quitting " << std::endl;
+    // std::cout << "file " << _fileName << " is not found...   quitting " << std::endl;
     exit(-1);
   }
 
   TH1D * projH = (TH1D*)file->Get("projH");
   if (projH==NULL) {
-    std::cout << "File should contain histogram with the name projH " << std::endl;
-    std::cout << "Check content of the file " << _fileName << std::endl;
+    // std::cout << "File should contain histogram with the name projH " << std::endl;
+    // std::cout << "Check content of the file " << _fileName << std::endl;
   }
 
   TString firstBinStr  = projH->GetXaxis()->GetBinLabel(1);
@@ -27,13 +27,13 @@ RecoilCorrector::RecoilCorrector(TString fileName) {
     paralZStr = secondBinStr;
     perpZStr  = firstBinStr;
   }
-  std::cout << "Parallel component      (U1) : " << paralZStr << std::endl;
-  std::cout << "Perpendicular component (U2) : " << perpZStr << std::endl;
+  // std::cout << "Parallel component      (U1) : " << paralZStr << std::endl;
+  // std::cout << "Perpendicular component (U2) : " << perpZStr << std::endl;
 
   TH1D * ZPtBinsH = (TH1D*)file->Get("ZPtBinsH");
   if (ZPtBinsH==NULL) {
-    std::cout << "File should contain histogram with the name ZPtBinsH " << std::endl;
-    std::cout << "Check content of the file " << _fileName << std::endl;
+    // std::cout << "File should contain histogram with the name ZPtBinsH " << std::endl;
+    // std::cout << "Check content of the file " << _fileName << std::endl;
     exit(-1);
   }
   int nZPtBins = ZPtBinsH->GetNbinsX();
@@ -47,8 +47,8 @@ RecoilCorrector::RecoilCorrector(TString fileName) {
 
   TH1D * nJetBinsH = (TH1D*)file->Get("nJetBinsH");
   if (nJetBinsH==NULL) {
-    std::cout << "File should contain histogram with the name nJetBinsH" << std::endl;
-    std::cout << "Check content of the file " << _fileName << std::endl;
+    // std::cout << "File should contain histogram with the name nJetBinsH" << std::endl;
+    // std::cout << "Check content of the file " << _fileName << std::endl;
     exit(-1);
   }
   int nJetsBins = nJetBinsH->GetNbinsX();
@@ -119,8 +119,8 @@ void RecoilCorrector::InitMEtWeights(TFile * _fileMet,
 
   // checking files
   //  if (_fileMet->IsZombie()) {
-  //    std::cout << "File " << _fileName << " is not found in directory " << _baseDir << std::endl;
-  //    std::cout << "quitting program..." << std::endl;
+  //    // std::cout << "File " << _fileName << " is not found in directory " << _baseDir << std::endl;
+  //    // std::cout << "quitting program..." << std::endl;
   //    exit(-1);
   //  }
 
@@ -144,27 +144,27 @@ void RecoilCorrector::InitMEtWeights(TFile * _fileMet,
 
       // checking functions
       if (_metZParalData[ZPtBin][jetBin]==NULL) {
-	std::cout << "Function with name " << binStrParalData
-		  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
+	// std::cout << "Function with name " << binStrParalData
+	//	  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
 	exit(-1);
 
       }
       if (_metZPerpData[ZPtBin][jetBin]==NULL) {
-	std::cout << "Function with name " << binStrPerpData
-		  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
+	// std::cout << "Function with name " << binStrPerpData
+	//	  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
 	exit(-1);
 	
       }
 
       if (_metZParalMC[ZPtBin][jetBin]==NULL) {
-	std::cout << "Function with name " << binStrParalMC
-		  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
+	// std::cout << "Function with name " << binStrParalMC
+	//	  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
 	exit(-1);
 
       }
       if (_metZPerpMC[ZPtBin][jetBin]==NULL) {
-	std::cout << "Function with name " << binStrPerpMC
-		  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
+	// std::cout << "Function with name " << binStrPerpMC
+	//	  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
 	exit(-1);
 	
       }
@@ -182,33 +182,33 @@ void RecoilCorrector::InitMEtWeights(TFile * _fileMet,
 
       // checking histograms
       if (_metZParalDataHist[ZPtBin][jetBin]==NULL) {
-	std::cout << "Histogram with name " << binStrParalDataHist
-		  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
+	// std::cout << "Histogram with name " << binStrParalDataHist
+	//	  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
 	exit(-1);
 
       }
       if (_metZPerpDataHist[ZPtBin][jetBin]==NULL) {
-	std::cout << "Histogram with name " << binStrPerpDataHist
-		  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
+	// std::cout << "Histogram with name " << binStrPerpDataHist
+	//	  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
 	exit(-1);
 	
       }
 
       if (_metZParalMCHist[ZPtBin][jetBin]==NULL) {
-	std::cout << "Histogram with name " << binStrParalMCHist
-		  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
+	// std::cout << "Histogram with name " << binStrParalMCHist
+	//	  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
 	exit(-1);
 
       }
       if (_metZPerpMCHist[ZPtBin][jetBin]==NULL) {
-	std::cout << "Histogram with name " << binStrPerpMCHist
-		  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
+	// std::cout << "Histogram with name " << binStrPerpMCHist
+	//	  << " is not found in file " << _fileName << "... quitting program..." << std::endl;
 	exit(-1);
 	
       }
 
 
-      std::cout << _ZPtStr[ZPtBin] << " : " << _nJetsStr[jetBin] << std::endl;
+      // std::cout << _ZPtStr[ZPtBin] << " : " << _nJetsStr[jetBin] << std::endl;
       
       double xminD,xmaxD;
 
@@ -306,28 +306,28 @@ void RecoilCorrector::CorrectWithHist(float MetPx,
     double sumProb[1];
     
     sumProb[0] = metZParalMCHist->Integral(1,metZParalMCHist->FindBin(U1))/metZParalMCHist->Integral();
-    //std::cout << "U1 value: " << U1 << "bin in MC hist: " << metZParalMCHist->FindBin(U1) << "Integral: " << sumProb[0]  << std::endl;
+    //// std::cout << "U1 value: " << U1 << "bin in MC hist: " << metZParalMCHist->FindBin(U1) << "Integral: " << sumProb[0]  << std::endl;
     
     if (sumProb[0]<0) {
-      //	std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
+      //	// std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
       sumProb[0] = 1e-5;
     }
     if (sumProb[0]>1) {
-      //	std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
+      //	// std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
       sumProb[0] = 1.0 - 1e-5;
     }
     
       
     metZParalDataHist->GetQuantiles(nSumProb,q,sumProb);
 
-    //std::cout << "Parallel component. Detemined probability: " << sumProb[0] <<  " Projection value. old = " << U1;
+    //// std::cout << "Parallel component. Detemined probability: " << sumProb[0] <<  " Projection value. old = " << U1;
     float U1reco = float(q[0]);
     U1 = U1reco;
-    //std::cout << " new = " << U1 << std::endl;
+    //// std::cout << " new = " << U1 << std::endl;
     
   }
   else {
-    std::cout << "Warning: parallel MET component out of histogram range: " << U1 << ". Correction won't be applied" << std::endl;
+    // std::cout << "Warning: parallel MET component out of histogram range: " << U1 << ". Correction won't be applied" << std::endl;
   //  float U1reco = rescale(U1,
   //      		   _meanMetZParalData[ZptBin][njets],
   //      		   _meanMetZParalMC[ZptBin][njets],
@@ -342,28 +342,28 @@ void RecoilCorrector::CorrectWithHist(float MetPx,
     double q[1];
     double sumProb[1];
     
-    //std::cout << "U2 value: " << U2 << "bin in MC hist: " << metZParalMCHist->FindBin(U2) << std::endl;
+    //// std::cout << "U2 value: " << U2 << "bin in MC hist: " << metZParalMCHist->FindBin(U2) << std::endl;
     sumProb[0] = metZPerpMCHist->Integral(1,metZPerpMCHist->FindBin(U2))/metZPerpMCHist->Integral();
     
     if (sumProb[0]<0) {
-      //	std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
+      //	// std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
       sumProb[0] = 1e-5;
     }
     if (sumProb[0]>1) {
-      //	std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
+      //	// std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
       sumProb[0] = 1.0 - 1e-5;
     }
     
     metZPerpDataHist->GetQuantiles(nSumProb,q,sumProb);
 
-    //std::cout << "Perpendicular component. Detemined probability: " << sumProb[0] <<  " Projection value. old = " << U2;
+    //// std::cout << "Perpendicular component. Detemined probability: " << sumProb[0] <<  " Projection value. old = " << U2;
     float U2reco = float(q[0]);
     U2 = U2reco;
-    //std::cout << " new = " << U2 << std::endl;
+    //// std::cout << " new = " << U2 << std::endl;
       
   }
   else {
-    std::cout << "Warning: perpendicular MET component out of histogram range: " << U2 << ". Correction won't be applied" << std::endl;
+    // std::cout << "Warning: perpendicular MET component out of histogram range: " << U2 << ". Correction won't be applied" << std::endl;
   //  float U2reco = rescale(U2,
   //      		   _meanMetZPerpData[ZptBin][njets],
   //      		   _meanMetZPerpMC[ZptBin][njets],
@@ -434,11 +434,11 @@ void RecoilCorrector::Correct(float MetPx,
     sumProb[0] = metZParalMC->IntegralOneDim(_xminMetZParalMC[ZptBin][njets],U1,_epsrel,_epsabs,_error);
     
     if (sumProb[0]<0) {
-      //	std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
+      //	// std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
       sumProb[0] = 1e-5;
     }
     if (sumProb[0]>1) {
-      //	std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
+      //	// std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
       sumProb[0] = 1.0 - 1e-5;
     }
     
@@ -467,11 +467,11 @@ void RecoilCorrector::Correct(float MetPx,
     sumProb[0] = metZPerpMC->IntegralOneDim(_xminMetZPerpMC[ZptBin][njets],U2,_epsrel,_epsabs,_error);
     
     if (sumProb[0]<0) {
-      //	std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
+      //	// std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
       sumProb[0] = 1e-5;
     }
     if (sumProb[0]>1) {
-      //	std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
+      //	// std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
       sumProb[0] = 1.0 - 1e-5;
     }
     

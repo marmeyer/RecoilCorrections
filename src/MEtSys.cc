@@ -7,13 +7,13 @@ MEtSys::MEtSys(TString fileName) {
   TString _fileName = baseDir+"/"+fileName;
   TFile * file = new TFile(_fileName);
   if (file->IsZombie()) {
-    std::cout << "file " << _fileName << " is not found...   quitting " << std::endl;
+    // std::cout << "file " << _fileName << " is not found...   quitting " << std::endl;
     exit(-1);
   }
   TH1D * jetBinsH = (TH1D*)file->Get("nJetBinsH");
   if (jetBinsH==NULL) {
-    std::cout << "Histogram nJetBinsH should be contained in file " << fileName << std::endl;
-    std::cout << "Check content of the file " << _fileName << std::endl;
+    // std::cout << "Histogram nJetBinsH should be contained in file " << fileName << std::endl;
+    // std::cout << "Check content of the file " << _fileName << std::endl;
     exit(-1);
   }
 
@@ -29,25 +29,25 @@ MEtSys::MEtSys(TString fileName) {
     TString histName = "syst";
     TH2D * hist = (TH2D*)file->Get(histName);
     if (hist==NULL) {
-      std::cout << "Histogram " << histName << " should be contained in file " << fileName << std::endl;
-      std::cout << "Check content of the file " << fileName << std::endl;
+      // std::cout << "Histogram " << histName << " should be contained in file " << fileName << std::endl;
+      // std::cout << "Check content of the file " << fileName << std::endl;
       exit(-1);
     }
     for (int xBin=0; xBin<2; ++xBin) {
       for (int yBin=0; yBin<3; ++yBin) {
 	sysUnc[xBin][yBin] = hist->GetBinContent(xBin+1,yBin+1);
-	std::cout << "Systematics : "  << uncType[xBin] << " " << JetBins[yBin] << " = " << sysUnc[xBin][yBin] << std::endl;
+	// std::cout << "Systematics : "  << uncType[xBin] << " " << JetBins[yBin] << " = " << sysUnc[xBin][yBin] << std::endl;
       }
     }
 
 
     for (int j=0; j<nJetBins; ++j) {
       TString histName = JetBins[j];
-      std::cout << histName << std::endl;
+      // std::cout << histName << std::endl;
       responseHist[j] = (TH1D*)file->Get(histName);
       if (responseHist[j]==NULL) {
-	std::cout << "Histogram " << histName << " should be contained in file " << fileName << std::endl;
-	std::cout << "Check content of the file " << fileName << std::endl;
+	// std::cout << "Histogram " << histName << " should be contained in file " << fileName << std::endl;
+	// std::cout << "Check content of the file " << fileName << std::endl;
 	exit(-1);
       }
 
@@ -132,7 +132,7 @@ void MEtSys::ShiftResponseMet(float metPx,
   int jets = njets; 
   if (jets>2) jets = 2; 
   if (jets<0) {
-    std::cout << "MEtSys::ShiftResponseMet() : Number of jets is negative !" << std::endl;
+    // std::cout << "MEtSys::ShiftResponseMet() : Number of jets is negative !" << std::endl;
     exit(-1);
   }
 
@@ -173,7 +173,7 @@ void MEtSys::ShiftResolutionMet(float metPx,
   int jets = njets; 
   if (jets>2) jets = 2; 
   if (jets<0) {
-    std::cout << "MEtSys::ShiftResponseMet() : Number of jets is negative !" << std::endl;
+    // std::cout << "MEtSys::ShiftResponseMet() : Number of jets is negative !" << std::endl;
     exit(-1);
   }
 
@@ -243,7 +243,7 @@ void MEtSys::ApplyMEtSys(float metPx,
   int jets = njets; 
   if (jets>2) jets = 2; 
   if (jets<0) {
-    std::cout << "MEtSys::ApplyMEtSys() : Number of jets is negative !" << std::endl;
+    // std::cout << "MEtSys::ApplyMEtSys() : Number of jets is negative !" << std::endl;
     exit(-1);
   }
 
