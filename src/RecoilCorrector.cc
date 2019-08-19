@@ -305,8 +305,10 @@ void RecoilCorrector::CorrectWithHist(float MetPx,
     double q[1];
     double sumProb[1];
     
-    sumProb[0] = metZParalMCHist->Integral(1,metZParalMCHist->FindBin(U1))/metZParalMCHist->Integral();
-    //// std::cout << "U1 value: " << U1 << "bin in MC hist: " << metZParalMCHist->FindBin(U1) << "Integral: " << sumProb[0]  << std::endl;
+    const int ibin = metZParalMCHist->FindBin(U1);
+    const double integralToNextBinEdge = metZParalMCHist->GetBinContent(ibin) * (metZParalMCHist->GetBinLowEdge(ibin+1) - U1) / metZParalMCHist->GetBinWidth(ibin);
+    sumProb[0] = (metZParalMCHist->Integral(1,ibin)-integralToNextBinEdge)/metZParalMCHist->Integral();
+    //std::cout << "U1 value: " << U1 << "bin in MC hist: " << metZParalMCHist->FindBin(U1) << "Integral: " << sumProb[0]  << std::endl;
     
     if (sumProb[0]<0) {
       //	// std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
@@ -336,14 +338,18 @@ void RecoilCorrector::CorrectWithHist(float MetPx,
   //  U1 = U1reco;
   }
 
-  if (U2>_range*_xminMetZPerp[ZptBin][njets]&&U2<_range*_xmaxMetZPerp[ZptBin][njets]) {
+  if (std::abs(U2)<_range*_xmaxMetZPerp[ZptBin][njets]) {
     
     int nSumProb = 1;
     double q[1];
     double sumProb[1];
     
-    //// std::cout << "U2 value: " << U2 << "bin in MC hist: " << metZParalMCHist->FindBin(U2) << std::endl;
-    sumProb[0] = metZPerpMCHist->Integral(1,metZPerpMCHist->FindBin(U2))/metZPerpMCHist->Integral();
+    //std::cout << "U2 value: " << U2 << "bin in MC hist: " << metZParalMCHist->FindBin(U2) << std::endl;
+    const double absU2 = std::abs(U2);
+    const int signU2 = TMath::Sign(1.0, U2);
+    const int ibin = metZPerpMCHist->FindBin(absU2);
+    const double integralToNextBinEdge = metZPerpMCHist->GetBinContent(ibin) *	(metZPerpMCHist->GetBinLowEdge(ibin+1) - absU2) / metZPerpMCHist->GetBinWidth(ibin);
+    sumProb[0] = ((metZPerpMCHist->Integral(1,ibin)-integralToNextBinEdge)/metZPerpMCHist->Integral());
     
     if (sumProb[0]<0) {
       //	// std::cout << "Warning ! ProbSum[0] = " << sumProb[0] << std::endl;
@@ -356,8 +362,8 @@ void RecoilCorrector::CorrectWithHist(float MetPx,
     
     metZPerpDataHist->GetQuantiles(nSumProb,q,sumProb);
 
-    //// std::cout << "Perpendicular component. Detemined probability: " << sumProb[0] <<  " Projection value. old = " << U2;
-    float U2reco = float(q[0]);
+    //std::cout << "Perpendicular component. Detemined probability: " << sumProb[0] <<  " Projection value. old = " << U2;
+    float U2reco = float(q[0])*signU2;
     U2 = U2reco;
     //// std::cout << " new = " << U2 << std::endl;
       
