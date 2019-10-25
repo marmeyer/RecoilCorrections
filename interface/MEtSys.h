@@ -1,5 +1,5 @@
-#ifndef HTT_MEtSys_h
-#define HTT_MEtSys_h
+#ifndef HTT_MEtSys_KIT_h
+#define HTT_MEtSys_KIT_h
 
 #include <TFile.h>
 #include <TH1.h>
@@ -9,6 +9,8 @@
 #include <TRandom.h>
 #include <TMath.h>
 #include <assert.h>
+
+namespace kit{
 
 class MEtSys {
   
@@ -96,6 +98,6 @@ class MEtSys {
   // second index  : jet multiplicity bin (0,1,2);
 
 };
-
+}
 
 #endif

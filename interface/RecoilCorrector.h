@@ -1,5 +1,5 @@
-#ifndef HTT_RecoilCorrector_h
-#define HTT_RecoilCorrector_h
+#ifndef HTT_RecoilCorrector_KIT_h
+#define HTT_RecoilCorrector_KIT_h
 
 #include <TFile.h>
 #include <TH1.h>
@@ -12,6 +12,8 @@
 #include "TVector.h"
 #include "Math/Vector2D.h"
 #include "Math/VectorUtil.h"
+
+namespace kit{
 
 class RecoilCorrector {
   
@@ -187,5 +189,6 @@ class RecoilCorrector {
   float _xmaxMetZParalMC[5][3];
 
 };
+}
 
 #endif

@@ -1,5 +1,7 @@
 #include "HTT-utilities/RecoilCorrections_KIT/interface/MEtSys.h"
 
+using namespace kit;
+
 MEtSys::MEtSys(TString fileName) {
 
   TString cmsswBase = TString( getenv ("CMSSW_BASE") );

@@ -1,5 +1,7 @@
 #include "HTT-utilities/RecoilCorrections_KIT/interface/RecoilCorrector.h"
 
+using namespace kit;
+
 RecoilCorrector::RecoilCorrector(TString fileName) {
 
   TString cmsswBase = TString( getenv ("CMSSW_BASE") );
